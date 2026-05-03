@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      # CHỈ mount vào thư mục data, KHÔNG mount đè lên thư mục home
+      - ./dynamodb_data:/home/dynamodblocal/data
+    # Đứng đúng nơi có file .jar mặc định của Amazon
+    working_dir: /home/dynamodblocal
+    # Trỏ dbPath vào thư mục data đã mount ở trên
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    user: root
