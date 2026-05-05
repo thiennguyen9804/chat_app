@@ -20,13 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtTokenService;
-    private Logger logger = LoggerFactory.getLogger(getClass());
     public AuthResponse login(LoginRequest dto) {
         var token = new UsernamePasswordAuthenticationToken(dto.username(), dto.password());
         Authentication authentication = authenticationManager.authenticate(token);
         var userId = ((AuthUser) authentication.getPrincipal()).getId();
-        String jwtToken = jwtTokenService.generateToken(dto.username());
-        logger.info(jwtToken);
+        String jwtToken = jwtTokenService.generateToken(userId, dto.username());
         return new AuthResponse(userId, jwtToken);
     }
 }
