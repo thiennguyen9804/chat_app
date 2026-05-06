@@ -1,0 +1,1 @@
+./init-tables.sh && ./seeding.sh

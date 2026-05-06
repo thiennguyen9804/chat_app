@@ -11,14 +11,14 @@ Thiết kế tuân thủ theo tinh thần của ByteByteGo "Design a Chat System
 
 | Layer                  | Công nghệ                          |
 |------------------------|------------------------------------|
-| Backend Framework      | **Spring Boot 3** + Java 21        |
+| Backend Framework      | **Spring Boot 3** + Java 21 + C# 12 + **ASP.NET 8** +        |
 | WebSocket              | Spring WebSocket + STOMP           |
 | Database (Messages)    | **Amazon DynamoDB**                |
 | Message Queue          | **RabbitMQ**                       |
 | Service Discovery      | **Apache ZooKeeper**               |
 | Authentication         | JWT (Spring Security + JJWT)       |
-| ORM / Data Access      | Spring Data DynamoDB               |
-| Build Tool             | Maven / Gradle                     |
+| ORM / Data Access      | Suitable DynamoDB ORM for each framework             |
+| Build Tool             | Gradle (for Spring) + NuGet (for ASP.NET)                     |
 | Container              | Docker + Docker Compose            |
 
 ## 3. High-Level Architecture
