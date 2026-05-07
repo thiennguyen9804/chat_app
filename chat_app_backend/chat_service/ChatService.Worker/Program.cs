@@ -12,14 +12,15 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
     return ConnectionMultiplexer.Connect(redisConnectionString);
 });
-builder.Services.AddHostedService<ChatExchangeConsumer>();
-var factory = new ConnectionFactory { 
-    HostName = "localhost", 
-    UserName = "guest", 
-    Password = "guest" 
+var factory = new ConnectionFactory 
+{ 
+    HostName = builder.Configuration["RabbitMQ:HostName"], 
+    Port = int.Parse(builder.Configuration["RabbitMQ:Port"] ?? "5672"),
+    UserName = builder.Configuration["RabbitMQ:UserName"], 
+    Password = builder.Configuration["RabbitMQ:Password"]
 };
-
 var connection = await factory.CreateConnectionAsync();
 builder.Services.AddSingleton(connection);
+builder.Services.AddHostedService<ChatExchangeConsumer>();
 var host = builder.Build();
 host.Run();

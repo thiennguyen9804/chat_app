@@ -1,10 +1,10 @@
 using Amazon.DynamoDBv2.DataModel;
 using Microsoft.AspNetCore.SignalR;
 
-public class ChatHub : Hub
+public class ChatHub(IDynamoDBContext db, IRabbitMQPublisher publisher) : Hub
 {
-    private readonly IDynamoDBContext _db;
-    public ChatHub(IDynamoDBContext db) => _db = db;
+    private readonly IDynamoDBContext _db = db;
+    private readonly IRabbitMQPublisher _publisher = publisher;
 
     public async Task SendMessage(int senderId, int receiverId, string content)
     {
@@ -19,6 +19,7 @@ public class ChatHub : Hub
             Content = content,
         };
         await _db.SaveAsync(newMessage);
+        _ = _publisher.PublishMessageAsync(newMessage);
 
     }
 

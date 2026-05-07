@@ -34,6 +34,7 @@ public class ChatExchangeConsumer(IConnectionMultiplexer redis, IHubContext<Chat
             var body = ea.Body.ToArray();
             var messageJson = Encoding.UTF8.GetString(body);
             var chatMsg = JsonSerializer.Deserialize<ChatMessage>(messageJson);
+            Console.WriteLine($"Có tin nhắn: {messageJson}");
             string presenceKey = $"user:{chatMsg.ReceiverId}:status";
             bool isOnline = await _redisDb.KeyExistsAsync(presenceKey);
             if(isOnline)
@@ -51,7 +52,7 @@ public class ChatExchangeConsumer(IConnectionMultiplexer redis, IHubContext<Chat
                 }
             } else
             {
-                // push notification
+                Console.WriteLine($"[Push Notification] Gửi thông báo với nội dung: {messageJson}");
             }
                 
         };

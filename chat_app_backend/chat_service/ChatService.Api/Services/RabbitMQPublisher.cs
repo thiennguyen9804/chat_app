@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using RabbitMQ.Client;
@@ -32,7 +33,12 @@ public class RabbitMQPublisher : IRabbitMQPublisher
     public async Task PublishMessageAsync<T>(T message)
     {
         await InitChannel();
-        var json = JsonSerializer.Serialize(message);
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = false
+        };
+        var json = JsonSerializer.Serialize(message, options);
         var body = Encoding.UTF8.GetBytes(json);
         await _channel!.BasicPublishAsync(
             exchange: string.Empty,

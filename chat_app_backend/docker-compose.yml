@@ -13,7 +13,7 @@ services:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
     user: root
 
-  rabbitmq:
+  rabbitmq-local:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq-local
     ports:
@@ -26,7 +26,7 @@ services:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
 
-  redis:
+  redis-local:
     image: redis:alpine
     container_name: redis-local
     ports:
@@ -36,3 +36,41 @@ services:
       - ./data/redis-local:/data
     # Bật AOF để Redis ghi dữ liệu xuống file ngay lập tức
     command: redis-server --appendonly yes
+
+  chat-service-api:
+    build:
+      context: . # Đưa ra gốc (nơi chứa thư mục chat_service)
+      dockerfile: chat_service/ChatService.Api/Dockerfile
+    container_name: chat-service-api
+    ports:
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    depends_on:
+      - dynamodb-local
+      - redis-local
+      - rabbitmq-local
+      - chat-service-worker
+
+  chat-service-worker:
+    build:
+      context: . # Đưa ra gốc (nơi chứa thư mục chat_service)
+      dockerfile: chat_service/ChatService.Worker/Dockerfile
+    container_name: chat-service-worker
+    environment:
+      - DOTNET_ENVIRONMENT=Docker
+    depends_on:
+      - dynamodb-local
+      - rabbitmq-local
+      - redis-local
+
+  api-service:
+    build:
+      context: ./api_service 
+    container_name: api-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - dynamodb-local
