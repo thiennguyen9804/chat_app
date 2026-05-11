@@ -33,9 +33,14 @@ dependencies {
     implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1"))    
     implementation("io.awspring.cloud:spring-cloud-aws-starter-dynamodb")
     
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    implementation("org.springframework.cloud:spring-cloud-starter-loadbalancer")
+    implementation(platform("org.springframework.cloud:spring-cloud-dependencies:2025.1.1"))
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 }
 
 tasks.withType<Test> {

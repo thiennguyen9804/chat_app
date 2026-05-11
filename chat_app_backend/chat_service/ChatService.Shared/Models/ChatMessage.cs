@@ -10,8 +10,12 @@ public class ChatMessage
     public string ChatId { get; set; }
 
     public int SenderId { get; set; }
-    public required int ReceiverId { get; set; }
+    public int ReceiverId { get; set; }
     public string Content { get; set; }
     public string Type { get; set; }
     public long Timestamp { get; set; }
+    public override string ToString()
+    {
+        return $"[Chat {ChatId}] {SenderId} -> {ReceiverId}: {Content} (Type: {Type}, At: {Timestamp})";
+    }
 }

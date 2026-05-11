@@ -18,7 +18,7 @@ aws dynamodb create-table \
     --region $REGION \
     --profile $PROFILE
 
-echo "--- Khởi tạo bảng ChatMessages (Không Stream) ---"
+# echo "--- Khởi tạo bảng ChatMessages (Không Stream) ---"
 
 aws dynamodb create-table \
     --table-name Messages \
@@ -26,8 +26,8 @@ aws dynamodb create-table \
         AttributeName=ChatId,AttributeType=S \
         AttributeName=MessageId,AttributeType=S \
     --key-schema \
-        AttributeName=ChatId,KeyType=HASH \
-        AttributeName=MessageId,KeyType=RANGE \
+        AttributeName=MessageId,KeyType=HASH \
+        AttributeName=ChatId,KeyType=RANGE \
     --provisioned-throughput \
         ReadCapacityUnits=5,WriteCapacityUnits=5 \
     --endpoint-url $ENDPOINT \

@@ -5,6 +5,7 @@ WORKDIR /src
 
 # Copy file .csproj và restore dependencies (tận dụng cache của Docker)
 COPY ["chat_service/ChatService.Worker/ChatService.Worker.csproj", "chat_service/ChatService.Worker/"]
+COPY ["chat_service/ChatService.Shared/ChatService.Shared.csproj", "chat_service/ChatService.Shared/"]
 RUN dotnet restore "chat_service/ChatService.Worker/ChatService.Worker.csproj"
 
 # Copy toàn bộ mã nguồn và build

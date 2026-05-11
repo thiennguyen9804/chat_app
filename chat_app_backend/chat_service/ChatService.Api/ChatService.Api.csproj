@@ -7,14 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.18.1" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="4.0.3.36" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.26" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="8.0.26" />
-    <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="Ulid" Version="1.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.26" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.2.2" />
+    <PackageReference Include="Steeltoe.Discovery.Eureka" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChatService.Shared\ChatService.Shared.csproj" />
   </ItemGroup>
 
 </Project>

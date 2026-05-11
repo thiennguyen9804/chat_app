@@ -3,11 +3,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using RabbitMQ.Client;
-
-public interface IRabbitMQPublisher
-{
-    Task PublishMessageAsync<T>(T message);
-}
+using ChatService.Shared;
 
 [Authorize]
 public class RabbitMQPublisher : IRabbitMQPublisher

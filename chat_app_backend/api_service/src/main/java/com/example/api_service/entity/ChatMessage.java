@@ -1,5 +1,4 @@
 package com.example.api_service.entity;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.SignalR;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using StackExchange.Redis;
+using ChatService.Shared;
+
 
 namespace ChatService.Worker;
 
@@ -14,6 +16,8 @@ public class ChatExchangeConsumer(IConnectionMultiplexer redis, IHubContext<Chat
     private IChannel? _channel;
     private readonly string _queueName = "chat_messages";
     private readonly IDatabase _redisDb = redis.GetDatabase();
+
+    
 
     private async Task InitChannel()
     {
@@ -68,5 +72,3 @@ public class ChatExchangeConsumer(IConnectionMultiplexer redis, IHubContext<Chat
         await base.StopAsync(cancellationToken);
     }
 }
-
-public class ChatHub : Hub { }

@@ -5,6 +5,7 @@ WORKDIR /src
 
 # Copy file .csproj và restore dependencies (tận dụng cache của Docker)
 COPY ["chat_service/ChatService.Api/ChatService.Api.csproj", "chat_service/ChatService.Api/"]
+COPY ["chat_service/ChatService.Shared/ChatService.Shared.csproj", "chat_service/ChatService.Shared/"]
 RUN dotnet restore "chat_service/ChatService.Api/ChatService.Api.csproj"
 
 # Copy toàn bộ mã nguồn và build
@@ -24,7 +25,7 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Cấu hình Port cho container (Khớp với cấu hình Kestrel của bạn)
-ENV ASPNETCORE_URLS=http://+:8081 
+ENV ASPNETCORE_URLS=http://+:8081
 EXPOSE 8081
 
 ENTRYPOINT ["dotnet", "ChatService.Api.dll"]

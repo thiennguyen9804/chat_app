@@ -7,7 +7,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Lưu dữ liệu DynamoDB vào ./data/dynamodb-local
       - ./data/dynamodb-local:/home/dynamodblocal/data
     working_dir: /home/dynamodblocal
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
@@ -20,11 +19,16 @@ services:
       - "5672:5672"
       - "15672:15672"
     volumes:
-      # Lưu dữ liệu RabbitMQ vào ./data/rabbitmq-local
       - ./data/rabbitmq-local:/var/lib/rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 
   redis-local:
     image: redis:alpine
@@ -32,25 +36,96 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      # Lưu dữ liệu Redis vào ./data/redis-local
       - ./data/redis-local:/data
-    # Bật AOF để Redis ghi dữ liệu xuống file ngay lập tức
     command: redis-server --appendonly yes
 
-  chat-service-api:
+  eureka-server:
+    image: steeltoeoss/eureka-server:4.1.1
+    ports:
+      - "8761:8761"
+    container_name: eureka-server
+    # healthcheck:
+    #       # Kiểm tra status code 200 từ trang chủ Eureka
+    #   test: ["CMD", "curl", "-f", "http://localhost:8761/"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 10
+
+
+  chat-asia-api:
     build:
       context: . # Đưa ra gốc (nơi chứa thư mục chat_service)
       dockerfile: chat_service/ChatService.Api/Dockerfile
-    container_name: chat-service-api
+    container_name: chat-asia-api
+    image: chat-service-api:latest
     ports:
       - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - Eureka__Instance__MetadataMap__region=ASIA
+      - Eureka__Instance__AppName=chat-service-api
+      - Eureka__Instance__Port=8081
+      - ASPNETCORE_URLS=http://+:8081
     depends_on:
-      - dynamodb-local
-      - redis-local
-      - rabbitmq-local
-      - chat-service-worker
+      rabbitmq-local:
+        condition: service_healthy
+      dynamodb-local:
+        condition: service_started
+      redis-local:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+    restart: always
+
+  chat-europe-api:
+    image: chat-service-api:latest
+    pull_policy: never
+    container_name: chat-europe-api
+    ports:
+      - "8082:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - Eureka__Instance__MetadataMap__region=EUROPE
+      - Eureka__Instance__AppName=chat-service-api
+      - Eureka__Instance__Port=8081
+      - ASPNETCORE_URLS=http://+:8081
+    depends_on:
+      rabbitmq-local:
+        condition: service_healthy
+      dynamodb-local:
+        condition: service_started
+      redis-local:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+      chat-asia-api:
+        condition: service_started
+    restart: always
+  
+  chat-america-api:
+    image: chat-service-api:latest
+    pull_policy: never
+    container_name: chat-america-api
+    ports:
+      - "8083:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - Eureka__Instance__MetadataMap__region=AMERICA
+      - Eureka__Instance__AppName=chat-service-api
+      - Eureka__Instance__Port=8081
+      - ASPNETCORE_URLS=http://+:8081
+    depends_on:
+      rabbitmq-local:
+        condition: service_healthy
+      dynamodb-local:
+        condition: service_started
+      redis-local:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+      chat-asia-api:
+        condition: service_started
+    restart: always
 
   chat-service-worker:
     build:
@@ -60,9 +135,13 @@ services:
     environment:
       - DOTNET_ENVIRONMENT=Docker
     depends_on:
-      - dynamodb-local
-      - rabbitmq-local
-      - redis-local
+      rabbitmq-local:
+        condition: service_healthy
+      dynamodb-local:
+        condition: service_started
+      redis-local:
+        condition: service_started
+    restart: always
 
   api-service:
     build:
@@ -73,4 +152,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - dynamodb-local
+      eureka-server:
+        condition: service_started # Chỉ chạy khi Eureka đã sẵn sàng nhận đăng ký
+      dynamodb-local:
+        condition: service_started

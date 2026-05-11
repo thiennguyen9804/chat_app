@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using RabbitMQ.Client;
+using ChatService.Shared;
+using Steeltoe.Discovery.Eureka;
 
 var builder = WebApplication.CreateBuilder(args);
 string redisConnectionString = builder.Configuration.GetConnectionString("Redis")!;
@@ -23,8 +25,6 @@ awsOptions.Credentials = credentials;
 builder.Services.AddDefaultAWSOptions(awsOptions);
 builder.Services.AddAWSService<IAmazonDynamoDB>();
 builder.Services.AddScoped<IDynamoDBContext, DynamoDBContext>();
-
-
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 builder.Services
     .AddAuthentication(options => {
@@ -59,26 +59,18 @@ builder.Services
                 }
             };
     });
-var factory = new ConnectionFactory 
-{ 
-    HostName = builder.Configuration["RabbitMQ:HostName"], 
-    Port = int.Parse(builder.Configuration["RabbitMQ:Port"] ?? "5672"),
-    UserName = builder.Configuration["RabbitMQ:UserName"],
-    Password = builder.Configuration["RabbitMQ:Password"]
-};
-// builder.Configuration.GetSection("RabbitMQ").Bind(factory);
+var factory = new ConnectionFactory();
+builder.Configuration.GetSection("RabbitMQ").Bind(factory);
 var connection = await factory.CreateConnectionAsync();
 builder.Services.AddSingleton(connection);
 builder.Services.AddSingleton<IRabbitMQPublisher, RabbitMQPublisher>();
 
-
-
+builder.Services.AddEurekaDiscoveryClient();
 var app = builder.Build();
 
 app.MapHub<ChatHub>("/chat-socket");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.Run();

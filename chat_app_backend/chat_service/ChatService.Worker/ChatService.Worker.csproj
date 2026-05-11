@@ -8,10 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="4.0.18.1" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="8.0.26" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
-    <PackageReference Include="RabbitMQ.Client" Version="7.2.1" />
-    <PackageReference Include="StackExchange.Redis" Version="2.12.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChatService.Shared\ChatService.Shared.csproj" />
   </ItemGroup>
 </Project>
